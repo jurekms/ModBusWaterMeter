@@ -153,7 +153,7 @@ uint8_t wmCallbackReadInputRegisters( void ) {
  *
  * handle write single coil 0x05 modbus function
  *
- * read counters and alarms flags from RAM memory - GLOBAL VARIABLE WATER_METER_COUNTER
+ *write single coil - GLOBAL VARIABLE WATER_METER_COILS
  *
  *@param	void
  *

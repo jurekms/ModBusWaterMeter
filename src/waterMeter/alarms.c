@@ -21,7 +21,7 @@
  *
  *******************************************************************************************************************************************************/
 
-uint32_t WM_CURRENT_COUNTER_TMP;								//temporary of actual water meter counter use to identify no flowing water
+volatile uint8_t WATER_METER_IS_WATER_FLOW_FLAG;
 uint32_t WM_CURRENT_COUNTER_CONTINUOUSLY_TMP;					//temporary of actual water meter counter use to identify continuously flowing water
 uint32_t WM_ALARM_LED;											//state of blinking LED register bit 0 -  connection time out, bit 1- no flow water, bit 2 - continuously flowing water
 uint16_t WM_CONTINUOUS_WATER_FLOW_ALARM_PERIOD_COUNTER;			//actual counter of numbers of continuously flowing water periods
@@ -44,11 +44,10 @@ uint16_t WM_CONTINUOUS_WATER_FLOW_ALARM_PERIOD_COUNTER;			//actual counter of nu
  *******************************************************************************************************************************************************/
 
 void wmAlarmsInit(void) {
-	WM_CURRENT_COUNTER_TMP =  WATER_METER_COUNTER.waterMeter.wmCurrentCounter;
+	WATER_METER_IS_WATER_FLOW_FLAG = 0;
 	WM_CURRENT_COUNTER_CONTINUOUSLY_TMP =  WATER_METER_COUNTER.waterMeter.wmCurrentCounter;
 	WM_ALARM_NO_WATER_FLOW_LED_OFF;
 	WM_ALARM_CONTINUOUS_WATER_FLOW_LED_OFF;
-	WATER_METER_COUNTER.waterMeter.wmConnectionTimeOutAlarmFlag = 0;
 	WATER_METER_COUNTER.waterMeter.wmNoWaterFlowAlarmFlag = 0;
 	WATER_METER_COUNTER.waterMeter.wmContinuousWaterFlowAlarmFlag = 0;
 	WM_TIMERS.wmNoWaterFlowTimer = 0;
@@ -66,14 +65,12 @@ void wmAlarmsInit(void) {
  *******************************************************************************************************************************************************/
 
 void wmAlarmsPoll(void) {
-	uint8_t isWaterFlow;
+
 	uint8_t isWaterFlowContinuously;
 
-	isWaterFlow = WM_CURRENT_COUNTER_TMP ^ WATER_METER_COUNTER.waterMeter.wmCurrentCounter;
 
-	if(isWaterFlow) {
-		wmRedLEDBlink(1, 1);
-	}
+
+
 
 	if(CFG_RAMMEM.configuration.wmNoWaterFlowAlarmAllow) {
 		if(WM_TIMERS.wmNoWaterFlowTimer >= CFG_RAMMEM.configuration.wmNoWaterFlowAlarmTime) {
@@ -82,7 +79,7 @@ void wmAlarmsPoll(void) {
 			WM_ALARM_NO_WATER_FLOW_LED_ON;
 		};
 
-		if(isWaterFlow) {
+		if(WATER_METER_IS_WATER_FLOW_FLAG) {
 			WM_ALARM_NO_WATER_FLOW_LED_OFF;
 			WM_TIMERS.wmNoWaterFlowTimer = 0;
 		}
@@ -113,7 +110,10 @@ void wmAlarmsPoll(void) {
 	}
 
 
-	WM_CURRENT_COUNTER_TMP = WATER_METER_COUNTER.waterMeter.wmCurrentCounter;
+	if(WATER_METER_IS_WATER_FLOW_FLAG) {
+		WATER_METER_IS_WATER_FLOW_FLAG = 0;
+		wmRedLEDBlink(1, 1);
+	}
 
 	if(WM_RED_LED.blinkStatus == LED_BLINKING_IDLE && WM_ALARM_LED ) {
 		wmRedLEDBlink(50, WM_ALARM_LED);

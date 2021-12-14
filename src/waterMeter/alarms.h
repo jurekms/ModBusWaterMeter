@@ -34,4 +34,6 @@ void wmAlarmsPoll(void);
 #define WM_ALARM_CONTINUOUS_WATER_FLOW_LED_OFF		WM_ALARM_LED &= ~2
 
 
+volatile extern uint8_t WATER_METER_IS_WATER_FLOW_FLAG;
+
 #endif /* WATERMETER_ALARMS_H_ */

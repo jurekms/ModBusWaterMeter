@@ -46,7 +46,7 @@ typedef struct {
 	uint32_t	wmContinuousWaterFlowAlarmPeriod;		//time continuously flow water of one period 1 = 10 ms => 6000 = 1 minute
 	uint16_t	wmNoWaterFlowAlarmAllow;				//if is SET (1) - no flow water alarm can be invoke
 	uint32_t	wmNoWaterFlowAlarmTime;					//time no flow water of one period 1 = 10 ms => 6000 = 1 minute => 8 640 000 = 24h
-	uint32_t	wmOUTTransistorAlarmAllow;				//if == 0x0001 any alarm sets the transistor outlet to set permanently , if == 0x002 any alarm sets the transistor display to SET only for the alarm time, if == 0 disable
+	uint16_t	wmOUTTransistorAlarmAllow;				//if == 0x0001 any alarm sets the transistor outlet to set permanently , if == 0x002 any alarm sets the transistor outlet to set only for the alarm time, if == 0 disable
 } TConfiguration;
 
 typedef union {
@@ -62,23 +62,21 @@ typedef union {
  *******************************************************************************************************************************************************/
 
 #define		WM_LABEL								"WaterMeter LABEL"
-#define		WM_SERIAL_NUMBER						63885548
-#define 	WM_SOFT_VERSION							1011
+#define		WM_SERIAL_NUMBER						70211805
+#define 	WM_SOFT_VERSION							1012
 #define		WM_CORRECTION_COUNTER					0
-#define 	WM_INITIAL_COUNTER						1
-#define 	WM_STORE_COUNTER						2
-#define		WM_CURRENT_COUNTER						124
+#define 	WM_INITIAL_COUNTER						0
+#define 	WM_STORE_COUNTER						200
+#define		WM_CURRENT_COUNTER						200
 #define 	WM_PULSE_COUNTER						2 * WM_CURRENT_COUNTER
 #define		WM_CHECK_YEAR							2025
 #define		WM_FIRST_TIME_RUN_FLAG					0xAA
 #define		WM_MODBUS_ADDRESS						0x10
 #define 	WM_CONTINUOUS_WATER_FLOW_ALARM_ALLOW	1
-#define		WM_CONTINUOUS_WATER_FLOW_ALARM_PERIOD	1000
-#define		WM_CONTINUOUS_WATER_FLOW_ALARM_TIMES	2
+#define		WM_CONTINUOUS_WATER_FLOW_ALARM_TIMES	10
+#define		WM_CONTINUOUS_WATER_FLOW_ALARM_PERIOD	6000
 #define		WM_NO_WATER_FLOW_ALARM_ALLOW			1
-#define 	WM_NO_WATER_FLOW_ALARM_TIME				3000
-#define		WM_CONNECTION_TIME_OUT_ALARM_ALLOW		1
-#define		WM_CONNECTION_TIME_OUT_ALARM_TIME		1000
+#define 	WM_NO_WATER_FLOW_ALARM_TIME				8640000
 #define 	WM_OUT_TRANSISTOR_ALARM_ALLOW			2
 
 
@@ -93,11 +91,10 @@ typedef struct {
 	uint32_t	wmPulsesCounter;                        //actual pulses number ~ 2 x wmCurrentCounter +/-1
 	uint16_t	wmContinuousWaterFlowAlarmFlag;			//numbers of continuously flow water alarms - it can be reset by set COIL wmAlarmsReset
 	uint16_t	wmNoWaterFlowAlarmFlag;					//numbers of no flow water alarms - it can be reset by set COIL wmAlarmsRese
-	uint16_t	wmConnectionTimeOutAlarmFlag;			//numbers of connection modbus timeout alarms - it can be reset by set COIL wmAlarmsRese
 } TWaterMeter ;
 
 typedef union {
-	uint16_t	dataUint16[ 7 ];						//number of 16 bits registers
+	uint16_t	dataUint16[ 6 ];						//number of 16 bits registers
 	TWaterMeter	waterMeter;
 } TUWaterMeter;
 
@@ -107,10 +104,10 @@ typedef union {
  * GLOBAL VARIABLES declarations , definitions in registers.c
  *
  *******************************************************************************************************************************************************/
-extern		 TUConfiguration			CFG_EEMEM EEMEM;
-extern		 TUConfiguration			CFG_RAMMEM;
-extern const TConfiguration 			CFG_PROGMEM PROGMEM;
-extern		 volatile 	TUWaterMeter	WATER_METER_COUNTER;
+extern					TUConfiguration			CFG_EEMEM EEMEM;
+extern					TUConfiguration			CFG_RAMMEM;
+extern 		const 		TConfiguration 			CFG_PROGMEM PROGMEM;
+extern		volatile 	TUWaterMeter			WATER_METER_COUNTER;
 
 
 

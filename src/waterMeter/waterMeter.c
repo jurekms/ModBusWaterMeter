@@ -16,17 +16,11 @@
 #include "waterMeter.h"
 #include "registers.h"
 #include "timers.h"
+#include "alarms.h"
 
 
 #include "../modbus/mb.h"
 
-/******************************************************************************************************************************************************
- *
- * GLOBAL VARIABLES
- *
- *******************************************************************************************************************************************************/
-
-volatile uint8_t			STATE;			// is using for sample state of input from IR module
 
 
 
@@ -107,26 +101,31 @@ void wmDebouncerInit( void ) {
 
 ISR( TIMER2_COMPA_vect ) {
 
-	    static uint8_t  cnt0, cnt1;
+	    static volatile uint8_t  cnt0, cnt1, state;
 	    uint8_t sample, toggle, delta;
 
 	    sample =  (PINB & IMP_PIN) ;
 
 
-	    delta = sample ^ STATE;
+	    delta = sample ^ state;
 	    cnt1 = (cnt1 ^ cnt0) & delta;
 	    cnt0 = ~cnt0 & delta;
 
 	    toggle = delta & ~(cnt0 | cnt1);
-	    STATE ^= toggle;
+	    state ^= toggle;
 
-	    WATER_METER_COUNTER.waterMeter.wmPulsesCounter = WATER_METER_COUNTER.waterMeter.wmPulsesCounter + ((toggle>>2)  & 0x01);
+	    WATER_METER_COUNTER.waterMeter.wmPulsesCounter = WATER_METER_COUNTER.waterMeter.wmPulsesCounter + ((toggle>>2)  & 0x01);  //>>2 - 2 second pin of port B !!!
 	    WATER_METER_COUNTER.waterMeter.wmCurrentCounter = WATER_METER_COUNTER.waterMeter.wmPulsesCounter >> 1;
+	    WATER_METER_IS_WATER_FLOW_FLAG =+((toggle>>2)  & 0x01);
+
+
 
 	    WM_TIMERS.LEDGreenTimer++;
 	    WM_TIMERS.LEDRedTimer++;
 	    WM_TIMERS.wmContinuousWaterFlowPeriodTimer++;
 	    WM_TIMERS.wmNoWaterFlowTimer++;
+
+
 
 }
 
