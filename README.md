@@ -1,6 +1,7 @@
 # ModBusWaterMeter
 Nakładka na wodomierz zliczająca impulsy ,udostępniająca dane za pomocą protokołu MODBUS poprzez interfejs RS485.
 Nakładka na wodomierz zliczająca ilość obrotów dwubarwnej tarczy znajdującej się na panelu odczytowym wodomierza. Optyczny układ przystawki oświetla tarczę obrotową wodomierza światłem IR, które jest odbijane (część lustrzana tarczy) lub pochłaniane (część czarna tarczy), odbita wiązka jest rejestrowana przez fototranzystor z którego sygnał analogowy kierowany jest do komparatora okienkowego zbudowanego na układzie LM393. Na wyjściu komparatora pojawia się sygnał wysoki - gdy fototranzystor jest oświetlony światłem odbitym od tarczy lub niski gdy światło jest pochłaniane przez tarczę i nie dociera do fototranzystora. Tak uformowany sygnał kierowany jest do wejścia D0 mikroprocesora 368. Oprogramowanie rejestruje dwa impulsy na każdy obrót tarczy - dwa przejścia lustro->czarny i czarny->lustro, co daje dwa impulsy na jeden litr przepływu.
+szczegóły w opisie 
 
 
 # ModBusWaterMeter
